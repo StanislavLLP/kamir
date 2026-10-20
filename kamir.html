@@ -1,0 +1,448 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Камыр</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Onest:wght@400;500;600&display=swap">
+<style>
+  /* Layout: узкая шапка со статусом, hero с крупным заголовком и иллюстрацией, меню с фильтром, заказ, адрес. */
+  :root {
+    --bg: #F0F4F6;
+    --surface: #FFFFFF;
+    --ink: #16203A;
+    --muted: #566077;
+    --line: #D8E0E6;
+    --accent: #D6335A;
+    --accent-ink: #FFFFFF;
+    --pistachio: #BFE0A4;
+    --pistachio-ink: #27401A;
+    --bun: #E3A35B;
+    --bun-dark: #B97530;
+    --ok: #2F8F4E;
+    --font-display: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+    --font-body: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1526; --surface: #18203A; --ink: #EAEEF7; --muted: #9AA5BD; --line: #2A3452;
+      --accent: #FF6F90; --accent-ink: #1A0A10; --pistachio: #4C6B3A; --pistachio-ink: #DDF2CB;
+      --bun: #D9954A; --bun-dark: #9E6226; --ok: #5FCB84;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1526; --surface: #18203A; --ink: #EAEEF7; --muted: #9AA5BD; --line: #2A3452;
+    --accent: #FF6F90; --accent-ink: #1A0A10; --pistachio: #4C6B3A; --pistachio-ink: #DDF2CB;
+    --bun: #D9954A; --bun-dark: #9E6226; --ok: #5FCB84;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    padding-block: 20px 96px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 72px; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  a { color: inherit; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* Шапка */
+  .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .brand b { font-family: var(--font-display); font-size: 1.35rem; letter-spacing: -0.01em; }
+  .brand span { color: var(--muted); font-size: 0.85rem; }
+  .status { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 0.9rem; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: none; }
+  .status[data-open="true"] .dot { background: var(--ok); }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); gap: 32px; align-items: center; }
+  .hero h1 { font-size: clamp(2rem, 6.2vw, 3.7rem); letter-spacing: -0.02em; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .lead { margin-top: 20px; max-width: 46ch; color: var(--muted); font-size: 1.05rem; }
+  .actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 12px; padding: 13px 22px; font-weight: 600; cursor: pointer; text-decoration: none; background: var(--accent); color: var(--accent-ink); }
+  .btn:hover { filter: brightness(1.06); }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .bake { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.92rem; color: var(--muted); }
+  .bake strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .art { width: 100%; max-width: 360px; justify-self: center; }
+  .art svg { width: 100%; height: auto; display: block; }
+
+  /* Меню */
+  .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .head h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tab { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 16px; cursor: pointer; font-weight: 500; }
+  .tab[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .tag { align-self: flex-start; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--pistachio); color: var(--pistachio-ink); }
+  .tag.bun { background: var(--bun); color: #2B1A06; }
+  .card h3 { font-size: 1.05rem; line-height: 1.25; }
+  .card p { color: var(--muted); font-size: 0.93rem; flex: 1; }
+  .buy { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
+  .price { font-family: var(--font-display); font-weight: 500; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .price small { display: block; font-family: var(--font-body); font-size: 0.78rem; color: var(--muted); font-weight: 400; }
+  .add { border: 1.5px solid var(--accent); color: var(--accent); background: transparent; border-radius: 10px; padding: 8px 16px; font-weight: 600; cursor: pointer; }
+  .add:hover { background: var(--accent); color: var(--accent-ink); }
+  .step { display: inline-flex; align-items: center; border: 1.5px solid var(--accent); border-radius: 10px; overflow: hidden; }
+  .step button { width: 36px; height: 36px; border: 0; background: transparent; color: var(--accent); font-size: 1.2rem; cursor: pointer; }
+  .step button:hover { background: var(--accent); color: var(--accent-ink); }
+  .step span { min-width: 30px; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* Заказ */
+  .order { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; min-width: 0; }
+  .panel h3 { font-size: 1.05rem; margin-bottom: 16px; }
+  .lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .lines li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .lines li > div:first-child { min-width: 0; }
+  .lines small { color: var(--muted); display: block; font-variant-numeric: tabular-nums; }
+  .empty { color: var(--muted); padding: 8px 0; }
+  .total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 16px; font-weight: 600; }
+  .total b { font-family: var(--font-display); font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+  form { display: flex; flex-direction: column; gap: 14px; }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: 0.88rem; font-weight: 500; }
+  input, select, textarea { background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 11px 13px; width: 100%; }
+  textarea { min-height: 72px; resize: vertical; }
+  .result { margin-top: 18px; border-top: 1px dashed var(--line); padding-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .result pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border-radius: 10px; padding: 14px; font-family: var(--font-body); font-size: 0.92rem; }
+  .note { font-size: 0.88rem; color: var(--muted); }
+
+  /* Адрес */
+  .where { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+  .where .panel p { color: var(--muted); }
+  .where .panel p + p { margin-top: 6px; }
+  .where b { color: var(--ink); font-weight: 600; }
+  .copyline { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .copyline code { font-family: var(--font-body); font-weight: 600; user-select: all; }
+  .mini { border: 1.5px solid var(--line); background: transparent; border-radius: 8px; padding: 3px 10px; font-size: 0.82rem; cursor: pointer; }
+  footer { color: var(--muted); font-size: 0.85rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 20px; }
+
+  /* Корзина-панель */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--ink); color: var(--bg);
+         padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+  .bar-in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .bar-in span { font-variant-numeric: tabular-nums; }
+  .bar .btn { padding: 10px 20px; }
+
+  @media (max-width: 760px) {
+    .hero, .order { grid-template-columns: minmax(0, 1fr); }
+    .art { max-width: 260px; order: -1; justify-self: start; }
+    .wrap { gap: 56px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .card { transition: transform 0.15s ease; }
+    .card:hover { transform: translateY(-2px); }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b>Камыр</b><span>қамыр — тесто</span></div>
+    <div class="status" id="status" data-open="false"><i class="dot"></i><span id="statusText">Проверяем часы работы</span></div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Тёплые булочки, холодное мороженое. <em>Рядом с домом.</em></h1>
+      <p class="lead">Печём три раза в день и закручиваем в тесто то, что любят у нас дома: кардамон, курагу, каймак, облепиху. Мороженое делаем на каймаке, айране и обжаренном кунжуте.</p>
+      <div class="actions">
+        <a class="btn" href="#menu">Выбрать к чаю</a>
+        <a class="btn ghost" href="#where">Где мы</a>
+      </div>
+      <div class="bake">
+        <span>Свежие партии:</span>
+        <span><strong>08:00</strong> · <strong>12:00</strong> · <strong>16:00</strong></span>
+        <span id="nextBake"></span>
+      </div>
+    </div>
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="160" cy="288" rx="130" ry="14" fill="var(--line)"/>
+        <ellipse cx="120" cy="226" rx="104" ry="64" fill="var(--bun-dark)"/>
+        <ellipse cx="120" cy="212" rx="104" ry="64" fill="var(--bun)"/>
+        <path d="M52 200 Q120 150 188 200" fill="none" stroke="var(--bun-dark)" stroke-width="7" stroke-linecap="round"/>
+        <path d="M70 224 Q120 184 170 224" fill="none" stroke="var(--bun-dark)" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="212" cy="108" r="76" fill="var(--accent)"/>
+        <circle cx="244" cy="204" r="54" fill="var(--pistachio)"/>
+        <ellipse cx="190" cy="82" rx="22" ry="12" fill="var(--surface)" opacity="0.35" transform="rotate(-30 190 82)"/>
+        <ellipse cx="226" cy="186" rx="14" ry="8" fill="var(--surface)" opacity="0.45" transform="rotate(-30 226 186)"/>
+      </svg>
+    </div>
+  </section>
+
+  <section id="menu" aria-labelledby="menuTitle">
+    <div class="head">
+      <h2 id="menuTitle">Меню</h2>
+      <div class="tabs" role="group" aria-label="Категории">
+        <button class="tab" type="button" data-cat="all" aria-pressed="true">Всё</button>
+        <button class="tab" type="button" data-cat="bun" aria-pressed="false">Булочки</button>
+        <button class="tab" type="button" data-cat="ice" aria-pressed="false">Мороженое</button>
+        <button class="tab" type="button" data-cat="combo" aria-pressed="false">Вместе</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="order" aria-labelledby="orderTitle">
+    <div class="head"><h2 id="orderTitle">Заказать к выдаче</h2></div>
+    <div class="order">
+      <div class="panel">
+        <h3>Ваш заказ</h3>
+        <ul class="lines" id="lines"></ul>
+        <p class="empty" id="empty">Пока пусто. Добавьте булочки или мороженое из меню выше.</p>
+        <div class="total"><span>Итого</span><b id="sum">0 ₸</b></div>
+      </div>
+      <div class="panel">
+        <h3>Когда забрать</h3>
+        <form id="form" autocomplete="on">
+          <label for="name">Имя
+            <input id="name" name="name" type="text" required placeholder="Айгерим">
+          </label>
+          <label for="phone">Телефон
+            <input id="phone" name="phone" type="tel" required placeholder="+7 700 000 00 00" inputmode="tel">
+          </label>
+          <label for="pickup">Время выдачи
+            <select id="pickup" name="pickup"></select>
+          </label>
+          <label for="comment">Комментарий
+            <textarea id="comment" name="comment" placeholder="Например: булочки подогреть, мороженое отдельно"></textarea>
+          </label>
+          <button class="btn" type="submit" id="submit" disabled>Собрать заказ</button>
+        </form>
+        <div class="result" id="result" hidden>
+          <pre id="summary"></pre>
+          <div class="actions" style="margin-top:0">
+            <button class="btn ghost" type="button" id="copy">Скопировать заказ</button>
+            <span class="note" id="copyNote"></span>
+          </div>
+          <p class="note">Покажите это сообщение на кассе или отправьте нам в мессенджер. Оплата при получении.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="where" aria-labelledby="whereTitle">
+    <div class="head"><h2 id="whereTitle">Где нас найти</h2></div>
+    <div class="where">
+      <div class="panel">
+        <h3>Адрес</h3>
+        <p><b>ул. Пример, 12</b></p>
+        <p>Астана, первый этаж жилого дома, вход со двора.</p>
+      </div>
+      <div class="panel">
+        <h3>Часы работы</h3>
+        <p><b>Каждый день</b> 08:00–22:00</p>
+        <p>Мороженое до закрытия, булочки пока не закончатся.</p>
+      </div>
+      <div class="panel">
+        <h3>Телефон</h3>
+        <p>Звоните, если нужно заказать больше десяти штук к празднику.</p>
+        <div class="copyline"><code id="tel">+7 700 000 00 00</code><button class="mini" type="button" id="copyTel">Копировать</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer><span>Камыр · булочки и мороженое</span><span>Цены в тенге, вес указан до подачи</span></footer>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <div class="bar-in">
+    <span id="barText"></span>
+    <a class="btn" href="#order">Оформить</a>
+  </div>
+</div>
+
+<script>
+(function () {
+  var ITEMS = [
+    { id: 'b1', cat: 'bun', name: 'Кардамоновый узел', desc: 'Мягкое тесто, кардамон и хрустящий сахар сверху.', w: '95 г', p: 450 },
+    { id: 'b2', cat: 'bun', name: 'Курага и каймак', desc: 'Сладкая курага и густой каймак внутри, тонкая корочка.', w: '120 г', p: 620 },
+    { id: 'b3', cat: 'bun', name: 'Мини-баурсаки с мёдом', desc: 'Пять золотистых шариков, подаём тёплыми с мёдом.', w: '130 г', p: 550 },
+    { id: 'b4', cat: 'bun', name: 'Облепиховая улитка', desc: 'Слоёная спираль с кисло-сладким облепиховым конфитюром.', w: '105 г', p: 520 },
+    { id: 'b5', cat: 'bun', name: 'Карамель и кунжут', desc: 'Солёная карамель и обжаренный кунжут.', w: '110 г', p: 580 },
+    { id: 'b6', cat: 'bun', name: 'Курт и зелёный лук', desc: 'Несладкая слойка: пряный курт, сыр и зелёный лук.', w: '100 г', p: 480 },
+    { id: 'i1', cat: 'ice', name: 'Пломбир на каймаке', desc: 'Сливочный вкус с лёгкой кислинкой.', w: 'шарик 70 г', p: 350 },
+    { id: 'i2', cat: 'ice', name: 'Облепиха и мёд', desc: 'Пломбир с облепиховым пюре и ложкой мёда.', w: 'шарик 70 г', p: 350 },
+    { id: 'i3', cat: 'ice', name: 'Жареный кунжут', desc: 'Тёмный ореховый вкус, похожий на тахини.', w: 'шарик 70 г', p: 380 },
+    { id: 'i4', cat: 'ice', name: 'Айран и лайм', desc: 'Освежающий кисловатый сорбет на айране.', w: 'шарик 70 г', p: 330 },
+    { id: 'i5', cat: 'ice', name: 'Фисташка', desc: 'Насыщенный фисташковый вкус, не приторный.', w: 'шарик 70 г', p: 430 },
+    { id: 'i6', cat: 'ice', name: 'Шоколад и морская соль', desc: 'Горький шоколад и щепотка соли.', w: 'шарик 70 г', p: 380 },
+    { id: 'c1', cat: 'combo', name: 'Тёплая с холодным', desc: 'Кардамоновый узел и шарик пломбира на каймаке. Булочку подаём тёплой.', w: '165 г', p: 720 },
+    { id: 'c2', cat: 'combo', name: 'Курага, каймак и облепиха', desc: 'Булочка с курагой и каймаком и шарик облепихи с мёдом.', w: '190 г', p: 900 },
+    { id: 'c3', cat: 'combo', name: 'Баурсаки и два шарика', desc: 'Мини-баурсаки с мёдом и два шарика на выбор. Напишите вкусы в комментарии.', w: '270 г', p: 1050 }
+  ];
+  var CAT = { bun: 'Булочка', ice: 'Мороженое', combo: 'Набор' };
+  var HOURS = { open: 8, close: 22 };
+  var BAKES = [8, 12, 16];
+  var cart = {};
+  var filter = 'all';
+
+  function $(id) { return document.getElementById(id); }
+  function money(n) { return n.toLocaleString('ru-RU') + ' ₸'; }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  function nowParts() {
+    try {
+      var f = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Asia/Almaty', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+      var h = 0, m = 0;
+      f.forEach(function (p) { if (p.type === 'hour') h = parseInt(p.value, 10) % 24; if (p.type === 'minute') m = parseInt(p.value, 10); });
+      return { h: h, m: m };
+    } catch (e) {
+      var d = new Date();
+      return { h: d.getHours(), m: d.getMinutes() };
+    }
+  }
+
+  function renderStatus() {
+    var t = nowParts();
+    var open = t.h >= HOURS.open && t.h < HOURS.close;
+    var s = $('status');
+    s.setAttribute('data-open', open ? 'true' : 'false');
+    $('statusText').textContent = open ? 'Открыто до ' + pad(HOURS.close) + ':00' : 'Сейчас закрыто, откроемся в ' + pad(HOURS.open) + ':00';
+    var next = null;
+    for (var i = 0; i < BAKES.length; i++) { if (BAKES[i] > t.h) { next = BAKES[i]; break; } }
+    $('nextBake').textContent = next !== null ? 'Следующая в ' + pad(next) + ':00' : 'Следующая завтра в ' + pad(BAKES[0]) + ':00';
+  }
+
+  function renderPickup() {
+    var sel = $('pickup');
+    var html = '<option value="Как можно скорее">Как можно скорее</option>';
+    for (var h = HOURS.open; h < HOURS.close; h++) {
+      html += '<option>' + pad(h) + ':00</option>';
+      html += '<option>' + pad(h) + ':30</option>';
+    }
+    sel.innerHTML = html;
+  }
+
+  function buyControl(it) {
+    var q = cart[it.id] || 0;
+    if (!q) return '<button class="add" type="button" data-act="add" data-id="' + it.id + '">В заказ</button>';
+    return '<div class="step"><button type="button" data-act="dec" data-id="' + it.id + '" aria-label="Убрать одну: ' + it.name + '">−</button><span>' + q + '</span><button type="button" data-act="inc" data-id="' + it.id + '" aria-label="Добавить ещё: ' + it.name + '">+</button></div>';
+  }
+
+  function renderGrid() {
+    var html = '';
+    ITEMS.forEach(function (it) {
+      if (filter !== 'all' && it.cat !== filter) return;
+      html += '<article class="card"><span class="tag ' + it.cat + '">' + CAT[it.cat] + '</span>' +
+        '<h3>' + it.name + '</h3><p>' + it.desc + '</p>' +
+        '<div class="buy"><div class="price">' + money(it.p) + '<small>' + it.w + '</small></div>' + buyControl(it) + '</div></article>';
+    });
+    $('grid').innerHTML = html;
+  }
+
+  function totals() {
+    var n = 0, sum = 0;
+    ITEMS.forEach(function (it) { var q = cart[it.id] || 0; n += q; sum += q * it.p; });
+    return { n: n, sum: sum };
+  }
+
+  function renderCart() {
+    var t = totals();
+    var html = '';
+    ITEMS.forEach(function (it) {
+      var q = cart[it.id] || 0;
+      if (!q) return;
+      html += '<li><div><b>' + it.name + '</b><small>' + q + ' × ' + money(it.p) + ' = ' + money(q * it.p) + '</small></div>' + buyControl(it) + '</li>';
+    });
+    $('lines').innerHTML = html;
+    $('empty').hidden = t.n > 0;
+    $('sum').textContent = money(t.sum);
+    $('submit').disabled = t.n === 0;
+    var bar = $('bar');
+    bar.hidden = t.n === 0;
+    $('barText').textContent = t.n + ' шт · ' + money(t.sum);
+  }
+
+  function refresh() { renderGrid(); renderCart(); $('result').hidden = true; }
+
+  function change(id, d) {
+    var q = (cart[id] || 0) + d;
+    if (q <= 0) delete cart[id]; else cart[id] = Math.min(q, 30);
+    refresh();
+  }
+
+  function onClick(e) {
+    var b = e.target.closest('button[data-act]');
+    if (!b) return;
+    var id = b.getAttribute('data-id');
+    var act = b.getAttribute('data-act');
+    change(id, act === 'dec' ? -1 : 1);
+  }
+  $('grid').addEventListener('click', onClick);
+  $('lines').addEventListener('click', onClick);
+
+  document.querySelectorAll('.tab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      filter = b.getAttribute('data-cat');
+      document.querySelectorAll('.tab').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      renderGrid();
+    });
+  });
+
+  function copyText(text, note) {
+    function fallback(node) {
+      try {
+        var r = document.createRange(); r.selectNodeContents(node);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      } catch (e) {}
+      if (note) note.textContent = 'Выделено, нажмите «Копировать» в меню телефона';
+    }
+    return function (node) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text()).then(function () { if (note) note.textContent = 'Скопировано'; }, function () { fallback(node); });
+      } else { fallback(node); }
+    };
+  }
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = totals();
+    if (!t.n) return;
+    var lines = ['Заказ в «Камыр»'];
+    ITEMS.forEach(function (it) {
+      var q = cart[it.id] || 0;
+      if (q) lines.push('• ' + it.name + ' × ' + q + ' — ' + money(q * it.p));
+    });
+    lines.push('Итого: ' + money(t.sum));
+    lines.push('Забрать: ' + $('pickup').value);
+    lines.push('Имя: ' + $('name').value.trim());
+    lines.push('Телефон: ' + $('phone').value.trim());
+    var c = $('comment').value.trim();
+    if (c) lines.push('Комментарий: ' + c);
+    $('summary').textContent = lines.join('\n');
+    $('copyNote').textContent = '';
+    $('result').hidden = false;
+    $('result').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+
+  $('copy').addEventListener('click', function () {
+    copyText(function () { return $('summary').textContent; }, $('copyNote'))($('summary'));
+  });
+  $('copyTel').addEventListener('click', function () {
+    copyText(function () { return $('tel').textContent; }, null)($('tel'));
+    $('copyTel').textContent = 'Готово';
+    setTimeout(function () { $('copyTel').textContent = 'Копировать'; }, 1500);
+  });
+
+  renderStatus();
+  renderPickup();
+  refresh();
+  setInterval(renderStatus, 60000);
+})();
+</script>
+
+</body></html>
